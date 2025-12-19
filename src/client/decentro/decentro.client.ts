@@ -32,7 +32,7 @@ export async function initiateKYCWorkflow(request: DecentroKYCRequest): Promise<
             request,
             {
                 headers: getHeaders(),
-                timeout: 30000,
+                timeout: 60000,
             }
         );
 
