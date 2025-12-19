@@ -218,3 +218,5 @@ export function isSessionTermination(callback: DecentroCallback): callback is Se
 export function isSessionTimeout(callback: DecentroCallback): callback is SessionTimeoutCallback {
     return callback.responseKey === 'event_uistream_session_timeout';
 }
+
+
