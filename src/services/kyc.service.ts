@@ -1,7 +1,7 @@
 import { initiateKYCWorkflow, DecentroKYCRequest, DecentroKYCResponse } from '../client/decentro';
 import organizationRepository from '../repositories/organization.repository';
 import checkInRepository from '../repositories/checkIn.repository';
-import { randomUUID } from 'crypto';
+import { generateMeetLikeId } from '../utils/id.util';
 import { CheckInStatus, ICheckIn } from '../models';
 import { InitiateKYCResponse } from '../controllers/response/kycServiceResponse';
 import { CheckInStatusResponse } from '../controllers/response/checkInStatusResponse';
@@ -38,7 +38,7 @@ export class KYCService {
                 throw new Error('Organization not found');
             }
 
-            const checkInId = randomUUID();
+            const checkInId = generateMeetLikeId();
             const redirectUrl = `${process.env.FRONTEND_URL}/redirect/${organization.nameId}/${checkInId}`;
             const callbackUrl = `${process.env.BACKEND_URL}/api/kyc/callback`;
 
@@ -132,15 +132,6 @@ export class KYCService {
 
         const { data } = callbackData;
         const aadhaarData = this.extractAadhaarData(data);
-        const panData = data.PAN;
-
-        if (aadhaarData) {
-            this.logAadhaarData(aadhaarData);
-        }
-
-        if (panData && panData.idNumber) {
-            this.logPANData(panData);
-        }
 
         // Update status to SESSION_COMPLETED
         await checkInRepository.updateStatus(checkIn.id, CheckInStatus.SESSION_COMPLETED);
@@ -158,10 +149,6 @@ export class KYCService {
 
         const { data } = callbackData;
         const aadhaarData = this.extractAadhaarData(data);
-
-        if (aadhaarData) {
-            this.logAadhaarData(aadhaarData);
-        }
 
         // Check PAN error
         if (data.PAN && data.PAN.message) {
@@ -184,15 +171,8 @@ export class KYCService {
         const { data } = callbackData;
         const aadhaarData = this.extractAadhaarData(data);
 
-        if (aadhaarData) {
-            this.logAadhaarData(aadhaarData);
-        }
-
         if (data.PAN) {
             console.log(`🔄 PAN poller initiated: ${data.PAN.message || 'Waiting for complete data'}`);
-            if (data.PAN.idNumber) {
-                this.logPANData(data.PAN);
-            }
         }
 
         console.log(`⏳ Waiting for poller to complete for CheckIn: ${checkIn.id}`);
@@ -204,12 +184,6 @@ export class KYCService {
         callbackData: PollerSuccessCallback
     ): Promise<void> {
         console.log(`🎯 Poller successfully fetched missing data for CheckIn: ${checkIn.id}`);
-
-        const { data } = callbackData;
-
-        if (data.PAN) {
-            this.logPANData(data.PAN);
-        }
 
         // Update status to SESSION_COMPLETED
         await checkInRepository.updateStatus(checkIn.id, CheckInStatus.SESSION_COMPLETED);
@@ -266,25 +240,6 @@ export class KYCService {
         }
 
         return null;
-    }
-
-    private logAadhaarData(aadhaarData: AadhaarData): void {
-        console.log('📋 Aadhaar Data:');
-        console.log(`  - Name: ${aadhaarData.proofOfIdentity.name}`);
-        console.log(`  - DOB: ${aadhaarData.proofOfIdentity.dob}`);
-        console.log(`  - Gender: ${aadhaarData.proofOfIdentity.gender}`);
-        console.log(`  - Address: ${aadhaarData.proofOfAddress.locality}, ${aadhaarData.proofOfAddress.district}, ${aadhaarData.proofOfAddress.state}`);
-        console.log(`  - Pincode: ${aadhaarData.proofOfAddress.pincode}`);
-        console.log(`  - UID: ${aadhaarData.aadhaarUid}`);
-    }
-
-    private logPANData(panData: PANData): void {
-        console.log('💳 PAN Data:');
-        console.log(`  - PAN Number: ${panData.idNumber || 'N/A'}`);
-        console.log(`  - Name: ${panData.userName || 'N/A'}`);
-        console.log(`  - DOB: ${panData.userDateOfBirth || 'N/A'}`);
-        console.log(`  - Gender: ${panData.userGender || 'N/A'}`);
-        console.log(`  - Status: ${panData.documentStatus || 'N/A'}`);
     }
 
     private async sendVerificationEmailsAndUpdateStatus(

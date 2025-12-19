@@ -38,13 +38,12 @@ export async function sendEmail(request: SendEmailRequest): Promise<boolean> {
 
 export async function sendKYCVerificationEmail(recipientEmail: string, data: KYCEmailData): Promise<boolean> {
 
-    const subject = `CheckIn Complete - ${data.organizationName}`;
-    const text = `Dear ${data.recipientName}, your CheckIn for ${data.organizationName} is complete. ID: ${data.checkInId}`;
+    const subject = `CheckIn Complete - ${data.aadhaarName}`;
+    const text = `CheckIn for ${data.organizationName} is complete. ID: ${data.checkInId}`;
     const html = `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-            <h2 style="color: #4A90E2;">CheckIn Complete</h2>
-            <p>Dear <strong>${data.recipientName}</strong>,</p>
-            <p>Your identity verification for <strong>${data.organizationName}</strong> has been completed successfully.</p>
+            <h2 style="color: #4A90E2;">CheckIn Complete for ${data.organizationName}</h2>
+            <p>Identity verification for <strong>${data.aadhaarName}</strong> has been completed successfully.</p>
             
             <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
                 <h3 style="margin-top: 0;">Verified Details:</h3>

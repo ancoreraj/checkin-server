@@ -1,5 +1,5 @@
 import { CheckIn, ICheckIn } from '../models/CheckIn';
-import { randomUUID } from 'crypto';
+import { generateMeetLikeId } from '../utils/id.util';
 
 export class CheckInRepository {
     async create(data: {
@@ -9,7 +9,7 @@ export class CheckInRepository {
         externalId?: string;
     }): Promise<ICheckIn> {
         const checkIn = new CheckIn({
-            id: data.id || randomUUID(),
+            id: data.id || generateMeetLikeId(),
             organizationId: data.organizationId,
             status: data.status || 'PENDING',
             externalId: data.externalId,
