@@ -189,7 +189,6 @@ export interface SessionTimeoutCallback extends DecentroCallbackBase {
     data: null;
 }
 
-
 export type DecentroCallback =
     | SessionInitiatedCallback
     | DocumentsFetchedCallback
