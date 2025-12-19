@@ -189,9 +189,6 @@ export interface SessionTimeoutCallback extends DecentroCallbackBase {
     data: null;
 }
 
-// ============================================
-// Union Type for All Callbacks
-// ============================================
 
 export type DecentroCallback =
     | SessionInitiatedCallback
