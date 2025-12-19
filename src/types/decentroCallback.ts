@@ -159,10 +159,6 @@ export interface PollerSuccessCallback extends DecentroCallbackBase {
     };
 }
 
-// ============================================
-// Callback Type 6: Poller Retries Exhausted
-// ============================================
-
 export interface PollerRetriesExhaustedCallback extends DecentroCallbackBase {
     status: 'SUCCESS';
     responseKey: 'error_uistream_poller_retries_exhausted';
