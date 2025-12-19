@@ -203,10 +203,6 @@ export type DecentroCallback =
     | SessionTerminationCallback
     | SessionTimeoutCallback;
 
-// ============================================
-// Type Guards for Runtime Type Checking
-// ============================================
-
 export function isSessionInitiated(callback: DecentroCallback): callback is SessionInitiatedCallback {
     return callback.responseKey === 'event_uistream_session_initiated';
 }
