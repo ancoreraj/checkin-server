@@ -165,19 +165,11 @@ export interface PollerRetriesExhaustedCallback extends DecentroCallbackBase {
     data: null;
 }
 
-// ============================================
-// Callback Type 7: Session Termination
-// ============================================
-
 export interface SessionTerminationCallback extends DecentroCallbackBase {
     status: 'FAILURE';
     responseKey: 'error_uistream_session_termination';
     data: null;
 }
-
-// ============================================
-// Callback Type 8: Session Timeout
-// ============================================
 
 export interface SessionTimeoutCallback extends DecentroCallbackBase {
     status: 'SUCCESS';
