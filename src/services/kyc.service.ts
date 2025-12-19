@@ -1,7 +1,7 @@
 import { initiateKYCWorkflow, DecentroKYCRequest, DecentroKYCResponse } from '../client/decentro';
 import organizationRepository from '../repositories/organization.repository';
 import checkInRepository from '../repositories/checkIn.repository';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { CheckInStatus, ICheckIn } from '../models';
 import { InitiateKYCResponse } from '../controllers/response/kycServiceResponse';
 import { CheckInStatusResponse } from '../controllers/response/checkInStatusResponse';
@@ -38,10 +38,9 @@ export class KYCService {
                 throw new Error('Organization not found');
             }
 
-            const checkInId = uuidv4();
+            const checkInId = randomUUID();
             const redirectUrl = `${process.env.FRONTEND_URL}/redirect/${organization.nameId}/${checkInId}`;
-            // const callbackUrl = `${process.env.BACKEND_URL}/api/kyc/callback/${organization.nameId}`;
-            const callbackUrl = 'https://webhook.site/03e6c0c3-1418-4af5-a3d6-c9160820f30b';
+            const callbackUrl = `${process.env.BACKEND_URL}/api/kyc/callback/${organization.nameId}`;
 
             const kycRequest: DecentroKYCRequest = {
                 consent: true,

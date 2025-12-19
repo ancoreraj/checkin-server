@@ -1,12 +1,12 @@
 import { Organization, IOrganization } from '../models/Organization';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export class OrganizationRepository {
     async create(data: {
         name: string;
         emailIds?: string[];
     }): Promise<IOrganization> {
-        const nameId = `${uuidv4()}_${data.name.toLowerCase().replace(/\s+/g, '_')}`;
+        const nameId = `${randomUUID()}_${data.name.toLowerCase().replace(/\s+/g, '_')}`;
 
         const organization = new Organization({
             name: data.name,
