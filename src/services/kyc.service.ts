@@ -40,7 +40,7 @@ export class KYCService {
 
             const checkInId = randomUUID();
             const redirectUrl = `${process.env.FRONTEND_URL}/redirect/${organization.nameId}/${checkInId}`;
-            const callbackUrl = `${process.env.BACKEND_URL}/api/kyc/callback/${organization.nameId}`;
+            const callbackUrl = `${process.env.BACKEND_URL}/api/kyc/callback`;
 
             const kycRequest: DecentroKYCRequest = {
                 consent: true,
