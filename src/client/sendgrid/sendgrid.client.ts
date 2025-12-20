@@ -20,7 +20,13 @@ export async function sendEmail(request: SendEmailRequest): Promise<boolean> {
         subject: request.subject,
         text: request.text,
         html: request.html,
-        attachments: request.attachments,
+        attachments: request.attachments?.map(att => ({
+            content: att.content,
+            filename: att.filename,
+            type: att.type,
+            disposition: att.disposition,
+            content_id: att.contentId,
+        })),
     };
 
     try {
@@ -40,24 +46,78 @@ export async function sendKYCVerificationEmail(recipientEmail: string, data: KYC
 
     const subject = `CheckIn Complete - ${data.aadhaarName}`;
     const text = `CheckIn for ${data.organizationName} is complete. ID: ${data.checkInId}`;
+
+    // Clean base64 string if it contains the metadata prefix
+    const cleanBase64 = data.userImage ? data.userImage.replace(/^data:image\/\w+;base64,/, '') : '';
+
+    const imageHtml = data.userImage
+        ? `<div style="text-align: center; margin-bottom: 25px;">
+             <img 
+                src="cid:userImage" 
+                alt="Guest Photo"
+                width="120"
+                height="120"
+                style="
+                    width: 120px; 
+                    height: 120px; 
+                    border-radius: 60px; 
+                    border: 4px solid #4A90E2; 
+                    object-fit: cover;
+                    display: block;
+                    margin: 0 auto;
+                "
+             />
+           </div>`
+        : '';
+
     const html = `
-        <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-            <h2 style="color: #4A90E2;">CheckIn Complete for ${data.organizationName}</h2>
-            <p>Identity verification for <strong>${data.aadhaarName}</strong> has been completed successfully.</p>
-            
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <h3 style="margin-top: 0;">Verified Details:</h3>
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li><strong>Name:</strong> ${data.aadhaarName}</li>
-                    <li><strong>DOB:</strong> ${data.aadhaarDob}</li>
-                    <li><strong>Gender:</strong> ${data.aadhaarGender}</li>
-                    <li><strong>Address:</strong> ${data.aadhaarAddress}</li>
-                    <li><strong>Pincode:</strong> ${data.aadhaarPincode}</li>
-                </ul>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 12px; color: #333;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #479dffff; margin-bottom: 10px;">CheckInVerified - ${data.organizationName}</h2>
+                <p style="color: #666; margin: 0;">Successful verification for <b>${data.aadhaarName}</b></p>
+            </div>
+
+            ${imageHtml}
+
+            <div style="background: #f8faff; padding: 25px; border-radius: 8px; border: 1px solid #eef2ff; margin: 25px 0;">
+                <h3 style="margin-top: 0; color: #479dffff; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Guest Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b; width: 120px;"><strong>Name:</strong></td>
+                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarName}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;"><strong>DOB:</strong></td>
+                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarDob}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;"><strong>Gender:</strong></td>
+                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarGender}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;"><strong>Pincode:</strong></td>
+                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarPincode}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b; vertical-align: top;"><strong>Address:</strong></td>
+                        <td style="padding: 8px 0; color: #1e293b; line-height: 1.4;">${data.aadhaarAddress}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b; vertical-align: top;"><strong>Verified on:</strong></td>
+                        <td style="padding: 8px 0; color: #1e293b; line-height: 1.4;">${data.verificationDate}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="background: #fdfdfd; padding: 15px; border-radius: 6px; border: 1px dashed #cbd5e1; margin-bottom: 25px;">
+                <p style="margin: 0; font-size: 0.9em; color: #475569;">
+                    <strong>Verification ID:</strong> <code style="color: #4A90E2; font-weight: bold;">${data.checkInId}</code>
+                </p>
             </div>
             
-            <p style="color: #666;">Verification ID: <code>${data.checkInId}</code></p>
-            <p style="margin-top: 30px; font-size: 0.8em; color: #999;">Verified on: ${data.verificationDate}</p>
+            <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #94a3b8; font-size: 0.8em;">
+                <p style="margin: 5px 0;">© ${new Date().getFullYear()} Easy Hotel Check-In | Digital Reception</p>
+            </div>
         </div>
     `;
 
@@ -68,10 +128,11 @@ export async function sendKYCVerificationEmail(recipientEmail: string, data: KYC
         html,
         attachments: data.userImage ? [
             {
-                content: data.userImage,
+                content: cleanBase64,
                 filename: `${data.aadhaarName}.jpg`,
                 type: 'image/jpeg',
-                disposition: 'attachment',
+                disposition: 'inline',
+                contentId: 'userImage',
             }
         ] : [],
     });
