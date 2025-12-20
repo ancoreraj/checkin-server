@@ -73,7 +73,7 @@ export async function sendKYCVerificationEmail(recipientEmail: string, data: KYC
     const html = `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 12px; color: #333;">
             <div style="text-align: center; margin-bottom: 30px;">
-                <h2 style="color: #479dffff; margin-bottom: 10px;">CheckInVerified - ${data.organizationName}</h2>
+                <h2 style="color: #479dffff; margin-bottom: 10px;">Check-In Verified - ${data.organizationName}</h2>
                 <p style="color: #666; margin: 0;">Successful verification for <b>${data.aadhaarName}</b></p>
             </div>
 
