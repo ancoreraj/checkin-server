@@ -257,7 +257,7 @@ export class KYCService {
             const emailData: KYCEmailData = {
                 recipientName: aadhaarData.proofOfIdentity.name,
                 organizationName: organization.name,
-                verificationDate: new Date().toLocaleDateString('en-IN'),
+                verificationDate: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: true }),
                 aadhaarName: aadhaarData.proofOfIdentity.name,
                 aadhaarDob: aadhaarData.proofOfIdentity.dob,
                 aadhaarGender: aadhaarData.proofOfIdentity.gender,
