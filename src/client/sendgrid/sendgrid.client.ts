@@ -71,54 +71,94 @@ export async function sendKYCVerificationEmail(recipientEmail: string, data: KYC
         : '';
 
     const html = `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 12px; color: #333;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h2 style="color: #479dffff; margin-bottom: 10px;">Check-In Verified - ${data.organizationName}</h2>
-                <p style="color: #666; margin: 0;">Successful verification for <b>${data.aadhaarName}</b></p>
-            </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                @media only screen and (max-width: 600px) {
+                    .container { padding: 25px 15px !important; border-radius: 0 !important; }
+                    .card { padding: 25px 20px !important; border-radius: 16px !important; }
+                    .header-title { font-size: 22px !important; }
+                    .guest-photo { width: 120px !important; height: 120px !important; }
+                    .details-table td { font-size: 13px !important; padding: 8px 0 !important; }
+                    .id-code { font-size: 16px !important; }
+                }
+            </style>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #05070a;">
+            <div class="container" style="background-color: #05070a; padding: 40px 20px; font-family: 'Outfit', 'Segoe UI', Tahoma, sans-serif;">
+                <div class="card" style="max-width: 600px; margin: auto; background: #0a0f18; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); color: #f8fafc;">
+                    
+                    <div style="text-align: center; margin-bottom: 35px;">
+                        <div style="font-size: 28px; font-weight: 800; color:  #6366f1; letter-spacing: 0.05em; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">
+                            EasyHotelCheckIn
+                        </div>
 
-            ${imageHtml}
+                        <div style="display: inline-block; padding: 6px 16px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 100px; color: #ffffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 20px; text-transform: uppercase;">
+                            Check-In Complete
+                        </div>
+                        <h2 class="header-title" style="font-size: 28px; margin: 0; font-weight: 700; color: #6366f1;">
+                            ${data.organizationName}
+                        </h2>
+                        <p style="color: #94a3b8; font-size: 16px; margin: 10px 0 0 0;">Digital Verification Successful for ${data.aadhaarName}</p>
+                    </div>
 
-            <div style="background: #f8faff; padding: 25px; border-radius: 8px; border: 1px solid #eef2ff; margin: 25px 0;">
-                <h3 style="margin-top: 0; color: #479dffff; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Guest Details</h3>
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b; width: 120px;"><strong>Name:</strong></td>
-                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarName}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b;"><strong>DOB:</strong></td>
-                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarDob}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b;"><strong>Gender:</strong></td>
-                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarGender}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b;"><strong>Pincode:</strong></td>
-                        <td style="padding: 8px 0; color: #1e293b;">${data.aadhaarPincode}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b; vertical-align: top;"><strong>Address:</strong></td>
-                        <td style="padding: 8px 0; color: #1e293b; line-height: 1.4;">${data.aadhaarAddress}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px 0; color: #64748b; vertical-align: top;"><strong>Verified on:</strong></td>
-                        <td style="padding: 8px 0; color: #1e293b; line-height: 1.4;">${data.verificationDate}</td>
-                    </tr>
-                </table>
-            </div>
+                    ${data.userImage ? `
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <img 
+                            src="cid:userImage" 
+                            alt="Guest Photo"
+                            width="130"
+                            height="130"
+                            class="guest-photo"
+                            style="width: 130px; height: 130px; border-radius: 65px; border: 3px solid #6366f1; object-fit: cover; display: block; margin: 0 auto; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);"
+                        />
+                    </div>` : ''}
 
-            <div style="background: #fdfdfd; padding: 15px; border-radius: 6px; border: 1px dashed #cbd5e1; margin-bottom: 25px;">
-                <p style="margin: 0; font-size: 0.9em; color: #475569;">
-                    <strong>Verification ID:</strong> <code style="color: #4A90E2; font-weight: bold;">${data.checkInId}</code>
-                </p>
+                    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px; margin-bottom: 30px;">
+                        <h3 style="margin-top: 0; color: #f8fafc; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; margin-bottom: 20px;">Guest Identity Details</h3>
+                        <table class="details-table" style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 10px 0; color: #64748b; width: 100px; font-size: 13px;"><strong>NAME</strong></td>
+                                <td style="padding: 10px 0; color: #f8fafc; font-weight: 600; font-size: 14px;">${data.aadhaarName}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; color: #64748b; font-size: 13px;"><strong>DOB</strong></td>
+                                <td style="padding: 10px 0; color: #f8fafc; font-size: 14px;">${data.aadhaarDob}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; color: #64748b; font-size: 13px;"><strong>GENDER</strong></td>
+                                <td style="padding: 10px 0; color: #f8fafc; font-size: 14px;">${data.aadhaarGender}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; color: #64748b; font-size: 13px;"><strong>PINCODE</strong></td>
+                                <td style="padding: 10px 0; color: #f8fafc; font-size: 14px;">${data.aadhaarPincode}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 0; color: #64748b; vertical-align: top; font-size: 13px;"><strong>ADDRESS</strong></td>
+                                <td style="padding: 10px 0; color: #f8fafc; line-height: 1.5; font-size: 14px;">${data.aadhaarAddress}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px; text-align: center;">
+                        <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Check-In Identification</div>
+                        <code class="id-code" style="display: block; font-size: 18px; color: #22d3ee; font-weight: 700; font-family: monospace;">${data.checkInId}</code>
+                        <div style="margin-top: 15px; font-size: 12px; color: #64748b;">
+                            Verified on: <strong>${data.verificationDate}</strong>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; color: #475569; font-size: 11px; letter-spacing: 0.02em;">
+                        <p style="margin: 0;">This is an automated report from your digital reception desk.</p>
+                        <p style="margin: 10px 0 0 0;">© ${new Date().getFullYear()} EasyHotelCheckIn | <a href="https://easyhotelcheckin.com" style="color: #22d3ee; text-decoration: none;">easyhotelcheckin.com</a></p>
+                    </div>
+                </div>
             </div>
-            
-            <div style="text-align: center; padding-top: 20px; border-top: 1px solid #eee; color: #94a3b8; font-size: 0.8em;">
-                <p style="margin: 5px 0;">© ${new Date().getFullYear()} Easy Hotel Check-In | Digital Reception</p>
-            </div>
-        </div>
+        </body>
+        </html>
     `;
 
     return sendEmail({
